@@ -1,0 +1,4 @@
+clang++
+%h %cpp -std=c++17
+-I
+./.venv/lib/python3.9/site-packages/pybind11/include/
