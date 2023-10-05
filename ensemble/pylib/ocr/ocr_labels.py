@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 from ensemble import box_calc
 
-from ..db import db
+from .. import db
 from .ensemble import Ensemble
 
 

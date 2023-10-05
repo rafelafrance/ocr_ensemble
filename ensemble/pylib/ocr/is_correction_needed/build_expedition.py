@@ -13,7 +13,7 @@ from PIL import Image
 from tqdm import tqdm
 from traiter.pylib.spell_well import SpellWell
 
-from ...db import db
+from ... import db
 
 
 def build_3_files(args: Namespace) -> None:

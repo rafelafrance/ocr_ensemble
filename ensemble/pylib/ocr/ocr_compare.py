@@ -13,8 +13,8 @@ from traiter.pylib.spell_well import SpellWell
 from ensemble import const
 from ensemble.pylib.builder import label_builder, line_align_py
 
+from .. import db
 from ..builder.line_align import char_sub_matrix as subs
-from ..db import db
 from . import label_transformer, ocr_runner
 
 IMAGE_TRANSFORMS = ["", "deskew_full", "binarize_full", "denoise_full"]

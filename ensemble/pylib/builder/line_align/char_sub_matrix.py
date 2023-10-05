@@ -2,8 +2,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from tqdm import tqdm
 
-from ... import const
-from ...db import db
+from ... import const, db
 
 FONT = const.ROOT_DIR / "fonts" / "NotoSerif-Regular.ttf"
 BASE_FONT_SIZE = 36
@@ -26,7 +25,7 @@ class Char:
         draw = ImageDraw.Draw(image)
         char = " " if self.char.isspace() else self.char
         draw.text((0, 0), char, font=self.font, anchor="lt", fill="white")
-        pix = np.asarray(image) > 128
+        pix = np.asarray(image.getdata()) > 128
         pix = pix.astype("float")
         return pix
 
