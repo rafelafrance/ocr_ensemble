@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Build an expedition to determine the quality of OCR output."""
 import argparse
 import textwrap
 from pathlib import Path
@@ -19,7 +18,7 @@ def main():
 
 
 def parse_args() -> argparse.Namespace:
-    description = """Build the 'Is Correction Needed?' expedition"""
+    description = """Build the "Is Correction Needed?" expedition"""
 
     arg_parser = argparse.ArgumentParser(
         description=textwrap.dedent(description), fromfile_prefix_chars="@"

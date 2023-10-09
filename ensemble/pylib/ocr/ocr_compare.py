@@ -10,17 +10,15 @@ from PIL import Image
 from tqdm import tqdm
 from traiter.pylib.spell_well import SpellWell
 
-from ensemble import const
-from ensemble.pylib.builder import label_builder, line_align_py
-
-from .. import db
+from .. import const, db
+from ..builder import label_builder, line_align_py
 from ..builder.line_align import char_sub_matrix as subs
 from . import label_transformer, ocr_runner
 
 IMAGE_TRANSFORMS = ["", "deskew_full", "binarize_full", "denoise_full"]
 
 
-async def ocr(gold_std):
+def ocr(gold_std):
     golden = []
     for gold in tqdm(gold_std, desc="ocr"):
         gold["gold_text"] = " ".join(gold["gold_text"].split())
@@ -30,10 +28,10 @@ async def ocr(gold_std):
         for transform in IMAGE_TRANSFORMS:
             image = transform_image(original, transform)
 
-            text = await ocr_runner.easy_text(image)
+            text = ocr_runner.easy_text(image)
             gold["pipe_text"][f"[{transform}, easyocr]"] = " ".join(text.split())
 
-            text = await ocr_runner.tess_text(image)
+            text = ocr_runner.tess_text(image)
             gold["pipe_text"][f"[{transform}, tesseract]"] = " ".join(text.split())
 
         golden.append(gold)

@@ -4,7 +4,7 @@ import easyocr
 import numpy as np
 import pytesseract
 
-from ensemble.pylib.builder import label_builder
+from ..builder import label_builder
 
 
 @dataclass
@@ -125,7 +125,7 @@ def get_lines(ocr_boxes, vert_overlap=0.3):
     return lines
 
 
-def find_overlap(line: Line, ocr_box, eps=1):
+def find_overlap(line: Line, ocr_box, eps=1e-6):
     """Find the vertical overlap between a line and an OCR bounding box.
 
     This is expressed as a fraction of the smallest height of the line

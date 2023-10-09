@@ -1,9 +1,8 @@
 from traiter.pylib.spell_well import SpellWell
 
-from ensemble.pylib.builder import label_builder
-from ensemble.pylib.builder.line_align import line_align_py
-
+from ..builder import label_builder
 from ..builder.line_align import char_sub_matrix as subs
+from ..builder.line_align import line_align_py  # noqa
 from . import label_transformer as lt
 from . import ocr_runner
 

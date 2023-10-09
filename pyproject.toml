@@ -20,8 +20,6 @@ dependencies = [
     "pillow",
     "pybind11",
     "pytesseract",
-    "python-dateutil",
-    "python-multipart",
     "scikit-image",
     "scipy",
     "tqdm",

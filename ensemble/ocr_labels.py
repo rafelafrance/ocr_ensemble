@@ -4,7 +4,6 @@ import asyncio
 import textwrap
 from pathlib import Path
 
-from pylib import const
 from pylib.ocr import ocr_labels
 from traiter.pylib import log
 
@@ -17,53 +16,27 @@ async def main():
 
 
 def parse_args() -> argparse.Namespace:
-    # The current best ensemble
-    # [[, easyocr], [, tesseract], [deskew, easyocr], [deskew, tesseract],
-    # [binarize, tesseract], [denoise, tesseract], [pre_process], [post_process]]
-    description = """OCR images of labels. (Try this ensemble: -RrDdbnPp)"""
-
     arg_parser = argparse.ArgumentParser(
-        description=textwrap.dedent(description), fromfile_prefix_chars="@"
+        fromfile_prefix_chars="@",
+        description=textwrap.dedent(
+            """OCR images of labels. (Try this ensemble: -RrDdbnPp)"""
+        ),
     )
 
     arg_parser.add_argument(
-        "--database",
-        required=True,
+        "--label-dir",
         type=Path,
         metavar="PATH",
-        help="""Path to a digi-leap database.""",
-    )
-
-    arg_parser.add_argument(
-        "--ocr-set",
         required=True,
-        metavar="NAME",
-        help="""Name this OCR set.""",
+        help="""Directory containing the labels to OCR.""",
     )
 
     arg_parser.add_argument(
-        "--label-set",
+        "--text-dir",
+        type=Path,
+        metavar="PATH",
         required=True,
-        metavar="NAME",
-        help="""Create this label set.""",
-    )
-
-    arg_parser.add_argument(
-        "--classes",
-        choices=const.CLASSES[1:],
-        default=["Typewritten"],
-        type=str,
-        nargs="*",
-        help="""Keep labels if they fall into any of these categories.
-            (default: %(default)s)""",
-    )
-
-    arg_parser.add_argument(
-        "--label-conf",
-        type=float,
-        default=0.25,
-        help="""Only OCR labels that have a confidence >= to this. Set it to 0.0 to
-            get all of the labels. (default: %(default)s)""",
+        help="""Output OCR text files to this directory.""",
     )
 
     arg_parser.add_argument(
@@ -146,19 +119,6 @@ def parse_args() -> argparse.Namespace:
         help="""Add a step to the OCR pipeline that post-processes the OCR text
             sequence with a spell checker etc. after building the consensus sequence.
             """,
-    )
-
-    arg_parser.add_argument(
-        "--notes",
-        default="",
-        metavar="TEXT",
-        help="""Notes about this run. Enclose them in quotes.""",
-    )
-
-    arg_parser.add_argument(
-        "--limit",
-        type=int,
-        help="""Limit to this many labels.""",
     )
 
     args = arg_parser.parse_args()
