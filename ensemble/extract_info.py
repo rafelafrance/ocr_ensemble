@@ -6,6 +6,7 @@ from pathlib import Path
 
 import openai
 from pylib import log
+from tqdm import tqdm
 
 
 def main():
@@ -18,13 +19,23 @@ def main():
 
     labels = get_labels(args.text_dir, args.limit, args.offset)
 
-    for stem, text in labels.items():
-        prompt = f'{args.prompt} "{text}"'
-        info = openai.Completion.create(model=args.model, prompt=prompt)
-
+    for stem, text in tqdm(labels.items()):
         path = args.openai_dir / f"{stem}.json"
+        if path.exists() and not args.overwrite:
+            continue
+
+        prompt = f'{args.prompt}, "{text}"'
+        response = openai.ChatCompletion.create(
+            model=args.model,
+            messages=[
+                {"role": "system", "content": args.role},
+                {"role": "user", "content": prompt},
+            ],
+        )
+        answer = response["choices"][0]["message"]["content"]
+
         with open(path, "w") as f:
-            f.write(info)
+            f.write(answer)
 
     log.finished()
 
@@ -78,11 +89,18 @@ def parse_args() -> argparse.Namespace:
     )
 
     arg_parser.add_argument(
+        "--role",
+        metavar="ROLE",
+        default=("You are an expert botanist."),
+        help="""Prompt for ChatGPT. (default: %(default)s)""",
+    )
+
+    arg_parser.add_argument(
         "--prompt",
         metavar="PROMPT",
         default=(
-            "You  are an expert botanist, please extract all information from "
-            "the herbarium label text, "
+            "Extract all information from the herbarium label text and put the output "
+            "into JSON format using DarwinCore fields including dynamicProperties, "
         ),
         help="""Prompt for ChatGPT. (default: %(default)s)""",
     )
@@ -92,6 +110,12 @@ def parse_args() -> argparse.Namespace:
         metavar="MODEL",
         default="gpt-4",
         help="""Which ChatGPT model to use. (default: %(default)s)""",
+    )
+
+    arg_parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="""Overwrite any existing output JSON files.""",
     )
 
     arg_parser.add_argument(
