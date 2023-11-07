@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import json
+import logging
 import textwrap
 from pathlib import Path
 
@@ -19,23 +20,31 @@ def main():
 
     labels = get_labels(args.text_dir, args.limit, args.offset)
 
+    missed = 0
     for stem, text in tqdm(labels.items()):
         path = args.openai_dir / f"{stem}.json"
         if path.exists() and not args.overwrite:
             continue
 
         prompt = f'{args.prompt}, "{text}"'
-        response = openai.ChatCompletion.create(
-            model=args.model,
-            messages=[
-                {"role": "system", "content": args.role},
-                {"role": "user", "content": prompt},
-            ],
-        )
-        answer = response["choices"][0]["message"]["content"]
+
+        try:
+            response = openai.ChatCompletion.create(
+                model=args.model,
+                messages=[
+                    {"role": "system", "content": args.role},
+                    {"role": "user", "content": prompt},
+                ],
+            )
+            answer = response["choices"][0]["message"]["content"]
+        except openai.error.Timeout:
+            missed += 1
+            continue
 
         with open(path, "w") as f:
             f.write(answer)
+
+    logging.info(f"Missed {missed} labels")
 
     log.finished()
 
@@ -91,7 +100,7 @@ def parse_args() -> argparse.Namespace:
     arg_parser.add_argument(
         "--role",
         metavar="ROLE",
-        default=("You are an expert botanist."),
+        default="You are an expert botanist.",
         help="""Prompt for ChatGPT. (default: %(default)s)""",
     )
 
