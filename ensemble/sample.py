@@ -86,7 +86,7 @@ def parse_args() -> argparse.Namespace:
 
     arg_parser.add_argument(
         "--sample",
-        metavar="PATH",
+        metavar="INT",
         type=int,
         default=200,
         help="""Number of paths to sample.""",
@@ -94,7 +94,7 @@ def parse_args() -> argparse.Namespace:
 
     arg_parser.add_argument(
         "--seed",
-        metavar="PATH",
+        metavar="INT",
         type=int,
         default=4438,
         help="""Random number seed.""",
