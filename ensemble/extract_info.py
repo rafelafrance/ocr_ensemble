@@ -18,7 +18,7 @@ def main():
         keys = json.load(f)
     openai.api_key = keys["key"]
 
-    labels = get_labels(args.text_dir, args.limit, args.offset)
+    labels = get_labels(args.text_dir)
 
     missed = 0
     for stem, text in tqdm(labels.items()):
@@ -49,13 +49,10 @@ def main():
     log.finished()
 
 
-def get_labels(text_dir, limit, offset) -> dict[str, str]:
+def get_labels(text_dir) -> dict[str, str]:
     labels = {}
 
     paths = sorted(text_dir.glob("*"))
-
-    if limit:
-        paths = paths[offset : limit + offset]
 
     for path in paths:
         with open(path) as f:
@@ -125,19 +122,6 @@ def parse_args() -> argparse.Namespace:
         "--overwrite",
         action="store_true",
         help="""Overwrite any existing output JSON files.""",
-    )
-
-    arg_parser.add_argument(
-        "--limit",
-        type=int,
-        help="""Read this many labels for input.""",
-    )
-
-    arg_parser.add_argument(
-        "--offset",
-        type=int,
-        default=0,
-        help="""Offset for splitting data.""",
     )
 
     args = arg_parser.parse_args()

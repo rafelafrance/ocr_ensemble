@@ -1,0 +1,3 @@
+--openai-dir=data/dl_random_2023-09-14_typewritten_gpt4
+--clean-dir=data/dl_random_2023-09-14_typewritten_gpt4_clean
+--show-bad-json

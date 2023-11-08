@@ -1,0 +1,4 @@
+--text-dir=./data/dl_random_2023-09-14_typewritten_ocr
+--openai-dir=data/dl_random_2023-09-14_typewritten_gpt4_clean
+--traiter-dir=data/dl_random_2023-09-14_typewritten_traiter
+--csv-file=data/dl_random_2023-09-14_typewritten_sample.csv
