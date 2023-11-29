@@ -23,7 +23,7 @@ jobs:
         python -m pip install .
         python -m spacy download en_core_web_md
         pip install git+https://github.com/rafelafrance/traiter.git@master#egg=traiter
-        pip install git+https://github.com/rafelafrance/FloraTraiter.git@master#egg=FloraTraiter
+        pip install git+https://github.com/rafelafrance/FloraTraiter.git@main#egg=FloraTraiter
     - name: Test with unittest
       run: |
         export MOCK_DATA=1; python -m unittest discover
