@@ -3,7 +3,7 @@ requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "parser_ensemble"
+name = "hybrid_traiter"
 version = "0.1.0"
 description = ""
 license = {file = "LICENSE"}
@@ -13,6 +13,7 @@ dependencies = [
     "Jinja2",
     "openai",
     "regex",
+    "spacy",
 ]
 optional-dependencies.dev = [
     "bandit",

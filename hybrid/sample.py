@@ -48,7 +48,7 @@ def parse_args() -> argparse.Namespace:
     arg_parser = argparse.ArgumentParser(
         fromfile_prefix_chars="@",
         description=textwrap.dedent(
-            """Look for confabulations in ChatGPT trait extractions."""
+            """Sample ChatGPT and Traiter results for comparison."""
         ),
     )
 
