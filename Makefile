@@ -22,8 +22,8 @@ dev: venv
 	source $(VENV)/bin/activate
 	$(PIP_INSTALL) -U pip setuptools wheel
 	$(PIP_INSTALL) -e .[dev]
-	$(PIP_INSTALL) -e ../../traiter/traiter --config-settings editable_mode=strict
-	$(PIP_INSTALL) -e ../../traiter/FloraTraiter --config-settings editable_mode=strict
+	$(PIP_INSTALL) -e ../../traiter/traiter
+	$(PIP_INSTALL) -e ../../traiter/FloraTraiter
 	$(SPACY_MODEL)
 	pre-commit install
 

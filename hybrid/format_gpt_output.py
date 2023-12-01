@@ -10,49 +10,64 @@ from pprint import pp
 from typing import Any
 
 import traiter.pylib.darwin_core as t_dwc
-from flora.pylib import pipeline
 from pylib import log
-from tqdm import tqdm
 from traiter.pylib import util as t_util
+from traiter.pylib.hybrid.base import TEMPLATE
+from traiter.pylib.hybrid.date_ import Date
+from traiter.pylib.hybrid.elevation import Elevation
 
 
 def main():
     log.started()
     args = parse_args()
 
-    nlp = pipeline.build()
-
     text_stems = set(p.stem for p in args.text_dir.glob("*"))
+    traiter_stems = set(p.stem for p in args.traiter_dir.glob("*"))
     openai_stems = set(p.stem for p in args.openai_dir.glob("*"))
 
-    os.makedirs(args.parsed_dir, exist_ok=True)
+    os.makedirs(args.formatted_dir, exist_ok=True)
 
-    stems = sorted(text_stems & openai_stems)
+    stems = sorted(text_stems & openai_stems & traiter_stems)
 
     logging.info(
         f"Text: {len(text_stems)}, "
+        f"Traiter: {len(traiter_stems)}, "
         f"OpenAI: {len(openai_stems)}, "
         f"Intersection: {len(stems)}, "
-        f"All numbers the same: {len(text_stems) == len(openai_stems) == len(stems)}."
+        f"All numbers the same: "
+        f"{len(text_stems) == len(openai_stems) == len(stems) == len(traiter_stems)}."
     )
 
-    for i, stem in tqdm(enumerate(stems)):
-        text = get_text(args.text_dir, stem)
-        rule_traits = get_rule_traits(text, nlp)
-        openai_traits = get_openai_traits(args.openai_dir, stem)
+    if args.count:
+        count_keys(args.openai_dir, openai_stems)
 
-        traits = validate_traits(text, stem, rule_traits, openai_traits)
+    else:
+        build_template()
 
-        save_traits(args.parsed_dir, stem, traits)
+        for stem in stems:
+            text = get_text(args.text_dir, stem)
+            rule_traits = get_rule_traits(args.traiter_dir, stem)
+            openai_traits = get_openai_traits(args.openai_dir, stem)
 
-        if i == 1:
-            break
+            traits = get_traits(text, stem, rule_traits, openai_traits)
+
+            save_traits(args.formatted_dir, stem, traits)
+
+            if any(k.lower().find("elevation") > -1 for k in openai_traits.keys()):
+                break
 
     log.finished()
 
 
-def validate_traits(text, stem, r_traits, o_traits) -> dict[str, Any]:
+def build_template():
+    Date()
+    Elevation()
+
+
+def get_traits(text, stem, r_traits, o_traits) -> dict[str, Any]:
     print("=" * 80)
+    print(stem)
+    print()
     print(text)
     print()
     pp(r_traits)
@@ -61,17 +76,23 @@ def validate_traits(text, stem, r_traits, o_traits) -> dict[str, Any]:
     print()
 
     traits = {}
-    o_core = {k: v for k, v in o_traits.items() if k.casefold().find("dynamic") == -1}
 
-    for key, o_val in o_core.items():
-        if key in r_traits and o_traits[key] == r_traits[key]:
-            traits[key] = o_val
+    for func in TEMPLATE.reconcile:
+        try:
+            traits |= func(r_traits, o_traits)
+        except ValueError as err:
+            logging.error(f"{err} [{stem}]")
 
-        elif key in r_traits and o_traits[key] != r_traits[key]:
-            logging.error(f"MISMATCH {key}: {o_val} != {r_traits[key]}, in {stem}")
+    print()
+    pp(traits)
+    print()
 
-        else:
-            logging.error(f"{key}: = {o_val}, in {stem}")
+    skipped = sorted(set(o_traits.keys()) - set(traits.keys()))
+    logging.info(f"Missed keys {', '.join(skipped)}")
+    print()
+    valid = [k for k in skipped if k in t_dwc.CORE]
+    logging.info(f"Missed valid keys {', '.join(valid)}")
+    print()
 
     return traits
 
@@ -84,28 +105,20 @@ def get_text(text_dir, stem) -> str:
     return text
 
 
-def get_rule_traits(text, nlp) -> dict[str, Any]:
-    doc = nlp(text)
-
-    traits = defaultdict(list)
-
-    for e in doc.ents:
-        dwc = t_dwc.DarwinCore()
-        trait = e._.trait.to_dwc(dwc).to_dict()
-        core = {k: v for k, v in trait.items() if k != t_dwc.DYN}
-        for key, value in core.items():
-            traits[key].append(value)
-
-    traits = {k: t_dwc.DarwinCore.convert_value_list(k, v) for k, v in traits.items()}
-
-    return traits
+def get_rule_traits(traiter_dir, stem) -> dict[str, Any]:
+    path = traiter_dir / f"{stem}.json"
+    with open(path) as f:
+        traiter = json.load(f)
+    return traiter
 
 
 def get_openai_traits(openai_dir, stem) -> dict[str, Any]:
     path = openai_dir / f"{stem}.json"
     with open(path) as f:
         openai = json.load(f)
-    openai = {t_dwc.DarwinCore.ns(k): v for k, v in openai.items()}
+
+    openai = {clean_key(k): v for k, v in openai.items()}
+
     return openai
 
 
@@ -113,6 +126,47 @@ def save_traits(parsed_dir, stem, traits):
     path = parsed_dir / f"{stem}.json"
     with open(path, "w") as f:
         json.dump(traits, f)
+
+
+def clean_key(key) -> str:
+    key = key.removeprefix("dc:").removeprefix("dcterms:").removeprefix("dnz:")
+    key = key.removeprefix("dwc-").removeprefix("dwc:").removeprefix("dwc")
+    key = key.removeprefix("Dc:").removeprefix("DwC:")
+    key = key.strip(":")
+    key = key.strip()
+
+    if len(key) > 2:
+        key = key[0].lower() + key[1:]
+
+    key = t_dwc.DarwinCore.ns(key)
+    return key
+
+
+def count_keys(dir_, stems) -> dict[str, int]:
+    keys = defaultdict(int)
+
+    for stem in stems:
+        path = dir_ / f"{stem}.json"
+        with open(path) as f:
+            obj = json.load(f)
+
+        for key in obj.keys():
+            key = clean_key(key)
+            keys[key] += 1
+
+    keys = dict(sorted(keys.items()))
+
+    valid_count = 0
+    print("key,valid,count")
+    for key, count in keys.items():
+        valid = 1 if key in t_dwc.CORE else ""
+        print(f"{key},{valid},{count}")
+        valid_count += 1 if valid else 0
+
+    logging.info(f"{valid_count}/{len(keys)} valid keys")
+    logging.info(f"{len(keys) - valid_count}/{len(keys)} invalid keys")
+
+    return keys
 
 
 def parse_args() -> argparse.Namespace:
@@ -126,7 +180,7 @@ def parse_args() -> argparse.Namespace:
         metavar="PATH",
         type=Path,
         required=True,
-        help="""Directory containing the OCR result files.""",
+        help="""Get OCR text output files from this directory.""",
     )
 
     arg_parser.add_argument(
@@ -134,15 +188,29 @@ def parse_args() -> argparse.Namespace:
         metavar="PATH",
         type=Path,
         required=True,
-        help="""Directory holding cleaned openai output.""",
+        help="""Get OpenAI JSON files from this directory.""",
     )
 
     arg_parser.add_argument(
-        "--parsed-dir",
+        "--traiter-dir",
         metavar="PATH",
         type=Path,
         required=True,
-        help="""Put the parsed result files into this directory.""",
+        help="""Get traiter JSON files from this directory.""",
+    )
+
+    arg_parser.add_argument(
+        "--formatted-dir",
+        metavar="PATH",
+        type=Path,
+        required=True,
+        help="""Put the formatted result files into this directory.""",
+    )
+
+    arg_parser.add_argument(
+        "--count",
+        action="store_true",
+        help="""Count the keys in the openAI output.""",
     )
 
     args = arg_parser.parse_args()
