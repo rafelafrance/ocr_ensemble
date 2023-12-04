@@ -5,7 +5,6 @@ VENV=.venv
 PY_VER=python3.11
 PYTHON=./$(VENV)/bin/$(PY_VER)
 PIP_INSTALL=$(PYTHON) -m pip install
-SPACY_MODEL=$(PYTHON) -m spacy download en_core_web_md
 
 test:
 	$(PYTHON) -m unittest discover
@@ -16,7 +15,6 @@ install: venv
 	$(PIP_INSTALL) .
 	$(PIP_INSTALL) git+https://github.com/rafelafrance/traiter.git@master#egg=traiter
 	$(PIP_INSTALL) git+https://github.com/rafelafrance/FloraTraiter.git@main#egg=FloraTraiter
-	$(SPACY_MODEL)
 
 dev: venv
 	source $(VENV)/bin/activate
@@ -24,7 +22,6 @@ dev: venv
 	$(PIP_INSTALL) -e .[dev]
 	$(PIP_INSTALL) -e ../../traiter/traiter
 	$(PIP_INSTALL) -e ../../traiter/FloraTraiter
-	$(SPACY_MODEL)
 	pre-commit install
 
 venv:

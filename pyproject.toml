@@ -3,7 +3,7 @@ requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "hybrid_traiter"
+name = "reconcile_traits"
 version = "0.1.0"
 description = ""
 license = {file = "LICENSE"}
@@ -36,7 +36,6 @@ line_length = 88
 force_single_line = true
 
 [tool.pycodestyle]
-ignore = "E402"  # Module level import not at top of file
 max-line-length = 88
 
 [tool.black]

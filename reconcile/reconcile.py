@@ -3,6 +3,7 @@ import argparse
 import json
 import logging
 import os
+import sys
 import textwrap
 from collections import defaultdict
 from pathlib import Path
@@ -12,9 +13,11 @@ from typing import Any
 import traiter.pylib.darwin_core as t_dwc
 from pylib import log
 from traiter.pylib import util as t_util
-from traiter.pylib.hybrid.base import TEMPLATE
-from traiter.pylib.hybrid.date_ import Date
-from traiter.pylib.hybrid.elevation import Elevation
+from traiter.pylib.reconcilers.base import TEMPLATE
+from traiter.pylib.reconcilers.date_ import Date
+from traiter.pylib.reconcilers.elevation import Elevation
+from traiter.pylib.reconcilers.habitat import Habitat
+from traiter.pylib.reconcilers.lat_long import LatLong
 
 
 def main():
@@ -49,12 +52,12 @@ def main():
             rule_traits = get_rule_traits(args.traiter_dir, stem)
             openai_traits = get_openai_traits(args.openai_dir, stem)
 
-            traits = get_traits(text, stem, rule_traits, openai_traits)
+            traits, errors = get_traits(text, stem, rule_traits, openai_traits)
+            if errors > args.errors:
+                logging.error(f"Total errors: {errors}")
+                sys.exit(1)
 
             save_traits(args.formatted_dir, stem, traits)
-
-            if any(k.lower().find("elevation") > -1 for k in openai_traits.keys()):
-                break
 
     log.finished()
 
@@ -62,9 +65,11 @@ def main():
 def build_template():
     Date()
     Elevation()
+    Habitat()
+    LatLong()
 
 
-def get_traits(text, stem, r_traits, o_traits) -> dict[str, Any]:
+def get_traits(text, stem, r_traits, o_traits) -> tuple[dict[str, Any], int]:
     print("=" * 80)
     print(stem)
     print()
@@ -76,12 +81,14 @@ def get_traits(text, stem, r_traits, o_traits) -> dict[str, Any]:
     print()
 
     traits = {}
+    errors = 0
 
     for func in TEMPLATE.reconcile:
         try:
             traits |= func(r_traits, o_traits)
         except ValueError as err:
             logging.error(f"{err} [{stem}]")
+            errors += 1
 
     print()
     pp(traits)
@@ -94,7 +101,7 @@ def get_traits(text, stem, r_traits, o_traits) -> dict[str, Any]:
     logging.info(f"Missed valid keys {', '.join(valid)}")
     print()
 
-    return traits
+    return traits, errors
 
 
 def get_text(text_dir, stem) -> str:
@@ -117,9 +124,14 @@ def get_openai_traits(openai_dir, stem) -> dict[str, Any]:
     with open(path) as f:
         openai = json.load(f)
 
-    openai = {clean_key(k): v for k, v in openai.items()}
+    new = {}
+    for key, value in openai.items():
+        new[key] = value
+        if isinstance(value, dict):
+            new |= {k: v for k, v in value.items()}
 
-    return openai
+    new = {clean_key(k): v for k, v in new.items()}
+    return new
 
 
 def save_traits(parsed_dir, stem, traits):
@@ -211,6 +223,14 @@ def parse_args() -> argparse.Namespace:
         "--count",
         action="store_true",
         help="""Count the keys in the openAI output.""",
+    )
+
+    arg_parser.add_argument(
+        "--errors",
+        metavar="INT",
+        type=int,
+        default=999_999_999,
+        help="""Allow this many errors before exiting.""",
     )
 
     args = arg_parser.parse_args()
