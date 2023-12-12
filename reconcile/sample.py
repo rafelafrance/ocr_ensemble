@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import csv
+import logging
 import random
 import textwrap
 from pathlib import Path
@@ -14,22 +15,43 @@ def main():
 
     random.seed(args.seed)
 
-    text_paths = set(p.stem for p in args.text_dir.glob("*"))
-    openai_paths = set(p.stem for p in args.openai_dir.glob("*"))
-    traiter_paths = set(p.stem for p in args.traiter_dir.glob("*"))
+    text_paths = set(p.stem for p in args.text_dir.glob("*.txt"))
+    openai_paths = set(p.stem for p in args.openai_dir.glob("*.json"))
+    traiter_paths = set(p.stem for p in args.traiter_dir.glob("*.json"))
+    reconciled_paths = set(p.stem for p in args.reconciled_dir.glob("*.json"))
 
-    paths = sorted(text_paths & openai_paths & traiter_paths)
+    paths = sorted(text_paths & openai_paths & traiter_paths & reconciled_paths)
 
+    text = len(text_paths)
+    reconciled = len(reconciled_paths)
+    traiter = len(traiter_paths)
+    openai = len(openai_paths)
+
+    logging.info(
+        f"Text: {text}, "
+        f"Reconciled: {reconciled}, "
+        f"Traiter: {traiter}, "
+        f"OpenAI: {openai}, "
+        f"Intersection: {len(paths)}, "
+        f"All numbers the same: "
+        f"{text == openai == reconciled == traiter == len(paths)}."
+    )
     sample = random.sample(paths, args.sample)
 
     with open(args.csv_file, "w") as out:
         writer = csv.writer(out)
-        writer.writerow(["ocr_text", "gpt4_output", "traiter_output"])
+        writer.writerow(
+            ["name", "ocr_text", "reconciled", "gpt4_output", "traiter_output"]
+        )
 
         for stem in sample:
             path = args.text_dir / f"{stem}.txt"
             with open(path) as f:
                 text = f.read()
+
+            path = args.reconciled_dir / f"{stem}.json"
+            with open(path) as f:
+                reconciled = f.read()
 
             path = args.openai_dir / f"{stem}.json"
             with open(path) as f:
@@ -39,7 +61,7 @@ def main():
             with open(path) as f:
                 traiter = f.read()
 
-            writer.writerow([text, openai, traiter])
+            writer.writerow([stem, text, reconciled, openai, traiter])
 
     log.finished()
 
@@ -58,6 +80,14 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         required=True,
         help="""Directory containing the OCR result files.""",
+    )
+
+    arg_parser.add_argument(
+        "--reconciled-dir",
+        metavar="PATH",
+        type=Path,
+        required=True,
+        help="""Directory holding the reconciled output.""",
     )
 
     arg_parser.add_argument(

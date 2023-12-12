@@ -17,6 +17,7 @@ from flora.pylib.reconcilers.admin_unit import AdminUnit
 from flora.pylib.reconcilers.id_number import IdNumber
 from flora.pylib.reconcilers.job import Job
 from flora.pylib.reconcilers.locality import Locality
+from flora.pylib.reconcilers.record_number import RecordNumber
 from flora.pylib.reconcilers.sex import Sex
 from flora.pylib.reconcilers.taxon_assoc import TaxonAssociation
 from flora.pylib.reconcilers.taxon_auth import TaxonAuthority
@@ -85,7 +86,7 @@ class Row:
     def save_traits(self, parsed_dir):
         path = parsed_dir / f"{self.stem}.json"
         with open(path, "w") as f:
-            json.dump(self.reconciled, f)
+            json.dump(self.reconciled, f, indent=4)
 
     def verbose_start(self):
         print("=" * 80)
@@ -151,6 +152,7 @@ def main():
             VerbatimCoordinates,
             AdminUnit,
             IdNumber,
+            RecordNumber,
             Locality,
             Sex,
             Job,
