@@ -133,6 +133,9 @@ def main():
         f"{len(text_stems) == len(openai_stems) == len(stems) == len(traiter_stems)}."
     )
 
+    if args.stem:
+        stems = [s for s in stems if s == args.stem]
+
     if args.count:
         count_keys(args.openai_dir)
 
@@ -311,6 +314,11 @@ def parse_args() -> argparse.Namespace:
         action="count",
         default=0,
         help="""Print information for debugging.""",
+    )
+
+    arg_parser.add_argument(
+        "--stem",
+        help="""Use this record for debugging.""",
     )
 
     args = arg_parser.parse_args()
