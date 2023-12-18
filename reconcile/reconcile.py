@@ -77,7 +77,7 @@ class Row:
     def reconcile(self, template):
         for func in template.actions:
             try:
-                self.reconciled |= func(self.traiter, self.openai)
+                self.reconciled |= func(self.traiter, self.openai, self.text)
             except ValueError as err:
                 self.errors.append(str(err))
 
