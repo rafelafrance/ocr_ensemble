@@ -13,32 +13,31 @@ from pathlib import Path
 from pprint import pp
 from typing import Any
 
-import traiter.pylib.darwin_core as t_dwc
-from flora.pylib.reconcilers.admin_unit import AdminUnit
-from flora.pylib.reconcilers.id_number import IdNumber
-from flora.pylib.reconcilers.job import Job
-from flora.pylib.reconcilers.locality import Locality
-from flora.pylib.reconcilers.record_number import RecordNumber
-from flora.pylib.reconcilers.sex import Sex
-from flora.pylib.reconcilers.taxon_assoc import TaxonAssociation
-from flora.pylib.reconcilers.taxon_auth import TaxonAuthority
-from flora.pylib.reconcilers.taxon_name import TaxonName
-from flora.pylib.reconcilers.taxon_rank import TaxonRank
+import pylib.darwin_core as dwc
 from pylib import log
-from traiter.pylib import util as t_util
-from traiter.pylib.reconcilers.base import Template
-from traiter.pylib.reconcilers.coordinate_precision import CoordinatePrecision
-from traiter.pylib.reconcilers.coordinate_uncertainty import CoordinateUncertainty
-from traiter.pylib.reconcilers.decimal_latitude import DecimalLatitude
-from traiter.pylib.reconcilers.decimal_longitude import DecimalLongitude
-from traiter.pylib.reconcilers.event_date import EventDate
-from traiter.pylib.reconcilers.geodetic_datum import GeodeticDatum
-from traiter.pylib.reconcilers.habitat import Habitat
-from traiter.pylib.reconcilers.maximum_elevation import MaximumElevationInMeters
-from traiter.pylib.reconcilers.minimum_elevation import MinimumElevationInMeters
-from traiter.pylib.reconcilers.verbatim_coordinates import VerbatimCoordinates
-from traiter.pylib.reconcilers.verbatim_elevation import VerbatimElevation
-from traiter.pylib.reconcilers.verbatim_system import VerbatimCoordinateSystem
+from pylib.flora.admin_unit import AdminUnit
+from pylib.flora.id_number import IdNumber
+from pylib.flora.job import Job
+from pylib.flora.locality import Locality
+from pylib.flora.record_number import RecordNumber
+from pylib.flora.sex import Sex
+from pylib.flora.taxon_assoc import TaxonAssociation
+from pylib.flora.taxon_auth import TaxonAuthority
+from pylib.flora.taxon_name import TaxonName
+from pylib.flora.taxon_rank import TaxonRank
+from pylib.traiter.base import Template
+from pylib.traiter.coordinate_precision import CoordinatePrecision
+from pylib.traiter.coordinate_uncertainty import CoordinateUncertainty
+from pylib.traiter.decimal_latitude import DecimalLatitude
+from pylib.traiter.decimal_longitude import DecimalLongitude
+from pylib.traiter.event_date import EventDate
+from pylib.traiter.geodetic_datum import GeodeticDatum
+from pylib.traiter.habitat import Habitat
+from pylib.traiter.maximum_elevation import MaximumElevationInMeters
+from pylib.traiter.minimum_elevation import MinimumElevationInMeters
+from pylib.traiter.verbatim_coordinates import VerbatimCoordinates
+from pylib.traiter.verbatim_elevation import VerbatimElevation
+from pylib.traiter.verbatim_system import VerbatimCoordinateSystem
 
 
 class Verbose(IntEnum):
@@ -62,7 +61,7 @@ class Row:
         path = text_dir / f"{self.stem}.txt"
         with open(path) as f:
             text = f.read()
-        self.text = t_util.compress(text)
+        self.text = compress(text)
 
     def get_traiter(self, traiter_dir):
         path = traiter_dir / f"{self.stem}.json"
@@ -214,7 +213,7 @@ def clean_key(key) -> str:
     if len(key) > 2:
         key = key[0].lower() + key[1:]
 
-    key = t_dwc.DarwinCore.ns(key)
+    key = dwc.ns(key)
     return key
 
 
@@ -232,7 +231,7 @@ def show_missed_keys(rows, verbose):
     pp(missed)
     print()
 
-    valid = {k: v for k, v in missed.items() if k in t_dwc.CORE}
+    valid = {k: v for k, v in missed.items() if k in dwc.CORE}
     print("---- Missed DwC Keys ", "-" * 40)
     pp(valid)
     print()
@@ -254,7 +253,7 @@ def count_keys(dir_) -> dict[str, int]:
     valid_count = 0
     print("key,valid,count")
     for key, count in keys.items():
-        valid = 1 if key in t_dwc.CORE else ""
+        valid = 1 if key in dwc.CORE else ""
         print(f"{key},{valid},{count}")
         valid_count += 1 if valid else 0
 
@@ -262,6 +261,13 @@ def count_keys(dir_) -> dict[str, int]:
     print(f"{len(keys) - valid_count}/{len(keys)} invalid keys")
 
     return keys
+
+
+def compress(text: str) -> str:
+    """Collapse whitespace in a string but keep lines."""
+    text = [" ".join(ln.split()) for ln in text.splitlines()]
+    text = "\n".join(ln for ln in text if ln)
+    return text
 
 
 def parse_args() -> argparse.Namespace:
