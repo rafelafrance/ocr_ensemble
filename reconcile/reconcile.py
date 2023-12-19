@@ -8,6 +8,7 @@ import textwrap
 from collections import defaultdict
 from dataclasses import dataclass
 from dataclasses import field
+from enum import IntEnum
 from pathlib import Path
 from pprint import pp
 from typing import Any
@@ -38,6 +39,13 @@ from traiter.pylib.reconcilers.minimum_elevation import MinimumElevationInMeters
 from traiter.pylib.reconcilers.verbatim_coordinates import VerbatimCoordinates
 from traiter.pylib.reconcilers.verbatim_elevation import VerbatimElevation
 from traiter.pylib.reconcilers.verbatim_system import VerbatimCoordinateSystem
+
+
+class Verbose(IntEnum):
+    QUIET = 0
+    ERRORS = 1
+    INPUT = 2
+    FIELDS = 3
 
 
 @dataclass
@@ -88,28 +96,31 @@ class Row:
         with open(path, "w") as f:
             json.dump(self.reconciled, f, indent=4)
 
-    def verbose_start(self):
-        print("=" * 80)
-        print(self.stem)
-        print()
-
-    def verbose(self):
-        if self.errors:
+    def verbose(self, verbose):
+        if (verbose == Verbose.ERRORS and self.errors) or (verbose > Verbose.ERRORS):
+            print("=" * 80)
+            print(self.stem)
             print()
-        print(f"Errors: {self.errors}")
-        print()
-        print("---- Text ", "-" * 40)
-        print(self.text)
-        print()
-        print("---- Traiter ", "-" * 40)
-        pp(self.traiter)
-        print()
-        print("---- OpenAI ", "-" * 40)
-        pp(self.openai)
-        print()
-        print("---- Reconciled ", "-" * 40)
-        pp(self.reconciled)
-        print()
+
+        if verbose >= Verbose.ERRORS and self.errors:
+            print("---- Errors ", "-" * 40)
+            for error in self.errors:
+                print(error)
+            print()
+
+        if verbose >= Verbose.INPUT:
+            print("---- Text ", "-" * 40)
+            print(self.text)
+            print()
+            print("---- Traiter ", "-" * 40)
+            pp(self.traiter)
+            print()
+            print("---- OpenAI ", "-" * 40)
+            pp(self.openai)
+            print()
+            print("---- Reconciled ", "-" * 40)
+            pp(self.reconciled)
+            print()
 
 
 def main():
@@ -176,23 +187,18 @@ def main():
             row.get_traiter(args.traiter_dir)
             row.get_openai(args.openai_dir)
 
-            if args.verbose:
-                row.verbose_start()
-
             row.reconcile(template)
 
             row.save_traits(args.formatted_dir)
 
-            if args.verbose:
-                row.verbose()
+            row.verbose(args.verbose)
 
             total_errors += len(row.errors)
             if total_errors > args.max_errors:
                 logging.error(f"Max errors of {args.max_errors} exceeded")
                 sys.exit(1)
 
-        if args.verbose > 1:
-            show_missed(rows)
+        show_missed_keys(rows, args.verbose)
 
         logging.info(f"Total errors: {total_errors}")
     log.finished()
@@ -212,7 +218,10 @@ def clean_key(key) -> str:
     return key
 
 
-def show_missed(rows):
+def show_missed_keys(rows, verbose):
+    if verbose < Verbose.FIELDS:
+        return
+
     missed = defaultdict(int)
     for row in rows:
         for m in row.missed:
