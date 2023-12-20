@@ -1,6 +1,6 @@
 from typing import Any
 
-from .base import Base
+from ..base import Base
 
 
 class Habitat(Base):

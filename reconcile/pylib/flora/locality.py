@@ -1,7 +1,7 @@
 from typing import Any
 
-from traiter.pylib.traiter.base import Base
-from traiter.traiter.pylib.darwin_core import SEP
+from ..base import Base
+from ..darwin_core import SEP
 
 
 class Locality(Base):
@@ -67,5 +67,7 @@ class Locality(Base):
             else:
                 locality += locality + SEP + o_remarks
 
-        obj[cls.label] = locality
+        if locality:
+            obj[cls.label] = locality
+
         return obj

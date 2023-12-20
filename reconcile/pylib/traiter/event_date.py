@@ -1,14 +1,12 @@
 import re
 from calendar import IllegalMonthError
 from collections import namedtuple
-from pathlib import Path
 from typing import Any
 
 from dateutil import parser
 
 from .. import darwin_core as dwc
-from .. import term_util
-from .base import Base
+from ..base import Base
 
 TraiterDate = namedtuple("TraiterDate", "raw_date date raw_verb verb")
 
@@ -24,10 +22,7 @@ class EventDate(Base):
     )
     verbatim_aliases = Base.get_aliases(verbatim_label)
 
-    date_csv = Path(__file__).parent.parent / "rules" / "terms" / "date_terms.csv"
-    patterns = term_util.term_data(date_csv, "pattern")
-    pattern = rf"( {'|'.join(patterns)} ) \s* [:=]* \s*"
-    clean_re = re.compile(pattern, flags=re.IGNORECASE | re.VERBOSE)
+    clean_re = re.compile(r"date", flags=re.IGNORECASE | re.VERBOSE)
 
     roman = {
         "i": " January ",

@@ -2,9 +2,7 @@ from pathlib import Path
 from typing import Any
 from typing import Callable
 
-from traiter.pylib import term_util
-
-from ..rules import terms
+from . import util
 
 
 class Template:
@@ -22,9 +20,9 @@ class Template:
 class Base:
     nil = "null none not provided not specified".casefold()
 
-    unit_csv = Path(terms.__file__).parent / "unit_length_terms.csv"
-    tic_csv = Path(terms.__file__).parent / "unit_tic_terms.csv"
-    factors_cm = term_util.term_data((unit_csv, tic_csv), "factor_cm", float)
+    unit_csv = Path(__file__).parent / "unit_length_terms.csv"
+    tic_csv = Path(__file__).parent / "unit_tic_terms.csv"
+    factors_cm = util.term_data((unit_csv, tic_csv), "factor_cm", float)
     factors_m = {k: v / 100.0 for k, v in factors_cm.items()}
 
     @classmethod

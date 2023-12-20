@@ -1,8 +1,7 @@
 from typing import Any
 
-from traiter.pylib import util
-
-from .base import Base
+from .. import util
+from ..base import Base
 
 
 class MaximumElevationInMeters(Base):

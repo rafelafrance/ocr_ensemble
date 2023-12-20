@@ -1,8 +1,8 @@
 import re
 from typing import Any
 
-from traiter.pylib.traiter.base import Base
-from traiter.traiter.pylib.darwin_core import SEP
+from ..base import Base
+from ..darwin_core import SEP
 
 
 class TaxonAssociation(Base):

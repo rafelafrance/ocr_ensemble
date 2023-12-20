@@ -1,6 +1,6 @@
 from typing import Any
 
-from traiter.pylib.traiter.base import Base
+from ..base import Base
 
 
 class AdminUnit(Base):

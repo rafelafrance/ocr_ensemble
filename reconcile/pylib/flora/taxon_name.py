@@ -1,7 +1,7 @@
 from collections import namedtuple
 from typing import Any
 
-from traiter.pylib.traiter.base import Base
+from ..base import Base
 
 Label = namedtuple("Label", "label match")
 

@@ -15,6 +15,7 @@ from typing import Any
 
 import pylib.darwin_core as dwc
 from pylib import log
+from pylib.base import Template
 from pylib.flora.admin_unit import AdminUnit
 from pylib.flora.id_number import IdNumber
 from pylib.flora.job import Job
@@ -25,7 +26,6 @@ from pylib.flora.taxon_assoc import TaxonAssociation
 from pylib.flora.taxon_auth import TaxonAuthority
 from pylib.flora.taxon_name import TaxonName
 from pylib.flora.taxon_rank import TaxonRank
-from pylib.traiter.base import Template
 from pylib.traiter.coordinate_precision import CoordinatePrecision
 from pylib.traiter.coordinate_uncertainty import CoordinateUncertainty
 from pylib.traiter.decimal_latitude import DecimalLatitude
