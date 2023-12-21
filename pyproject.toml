@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ocr_ensemble"
-version = "0.1.0"
+version = "0.1.1"
 description = ""
 license = {file = "LICENSE"}
 authors = [{name="Raphael LaFrance", email="rafelafrance@proton.me"}]
@@ -14,7 +14,6 @@ dependencies = [
     "cppimport",
     "easyocr",
     "matplotlib",
-    "nltk",
     "numpy",
     "pandas",
     "pillow",
