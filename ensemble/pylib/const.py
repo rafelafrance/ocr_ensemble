@@ -1,7 +1,7 @@
 from pathlib import Path
 
 # #########################################################################
-ROOT_DIR = Path(".")
+ROOT_DIR = Path()
 
 CHAR_DB = (
     ROOT_DIR

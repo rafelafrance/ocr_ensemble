@@ -38,7 +38,7 @@ def execute(cxn, sql, params=None):
     return cxn.execute(sql, params)
 
 
-def select(cxn, sql, one_column=False, **kwargs):
+def select(cxn, sql, one_column=False, **kwargs):  # noqa: FBT002
     rows = cxn.execute(sql, dict(kwargs))
 
     if one_column:
@@ -56,7 +56,7 @@ def canned_insert(cxn, table, batch):
     cxn.executemany(sql, batch)
 
 
-def canned_select(cxn, key, one_column=False, **kwargs):
+def canned_select(cxn, key, one_column=False, **kwargs):  # noqa: FBT002
     sql = CANNED_SELECTS[key]
 
     if kwargs.get("limit"):

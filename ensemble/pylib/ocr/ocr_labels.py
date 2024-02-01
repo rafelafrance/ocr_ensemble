@@ -1,6 +1,5 @@
 import argparse
 import logging
-import os
 import warnings
 
 from PIL import Image, UnidentifiedImageError
@@ -18,7 +17,7 @@ IMAGE_EXCEPTIONS = (
 
 
 async def ocr_labels(args: argparse.Namespace) -> None:
-    os.makedirs(args.text_dir, exist_ok=True)
+    args.text_dir.mkdir(parents=True, exist_ok=True)
 
     ensemble = Ensemble(**vars(args))
 
@@ -32,8 +31,9 @@ async def ocr_labels(args: argparse.Namespace) -> None:
                 text = await ensemble.run(label)
 
             except IMAGE_EXCEPTIONS as err:
-                logging.error(f"Could not prepare {path.name}: {err}")
+                msg = f"Could not prepare {path.name}: {err}"
+                logging.exception(msg)
                 continue
 
-        with open(args.text_dir / f"{path.stem}.txt", "w") as f:
+        with (args.text_dir / f"{path.stem}.txt").open("w") as f:
             f.write(text)

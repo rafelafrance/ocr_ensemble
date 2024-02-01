@@ -2,13 +2,15 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from tqdm import tqdm
 
-from ... import const, db
+from ensemble.pylib import const, db
 
 FONT = const.ROOT_DIR / "fonts" / "NotoSerif-Regular.ttf"
 BASE_FONT_SIZE = 36
 FONT_POINT = 24  # Size the char inside the image
 IMAGE_SIZE = 40  # Size of the image that contains a char
 CHAR_FONT = ImageFont.truetype(str(FONT), FONT_POINT)
+THRESHOLD = 128
+HALF = 2
 
 
 class Char:
@@ -25,7 +27,7 @@ class Char:
         draw = ImageDraw.Draw(image)
         char = " " if self.char.isspace() else self.char
         draw.text((0, 0), char, font=self.font, anchor="lt", fill="white")
-        pix = np.asarray(image.getdata()) > 128
+        pix = np.asarray(image.getdata()) > THRESHOLD
         pix = pix.astype("float")
         return pix
 
@@ -40,8 +42,8 @@ class Char:
 
     def center(self):
         """Move a char image to the center of the image."""
-        y = (self.pix.shape[0] - self.h) // 2
-        x = (self.pix.shape[1] - self.w) // 2
+        y = (self.pix.shape[0] - self.h) // HALF
+        x = (self.pix.shape[1] - self.w) // HALF
         self.pix = np.roll(self.pix, (y, x), axis=(0, 1))
 
 
@@ -87,7 +89,8 @@ def insert_matrix(cxn, matrix, char_set):
 
 
 def calc_scores(old_chars, new_chars, matrix, image_size, font):
-    """Calculate character substitution values.
+    """
+    Calculate character substitution values.
 
     Substitution values go from 2 to -2. The cutoff values for converting a scores into
     substitution values are _magic_ constants.
@@ -106,7 +109,7 @@ def calc_scores(old_chars, new_chars, matrix, image_size, font):
                 sub = 2.0
             elif char1.char.isspace() or char2.char.isspace():
                 score = np.sum(char2.pix)
-                sub = -1.0 if score < 20 else -2.0  # MAGIC TODO
+                sub = -1.0 if score < 20 else -2.0  # noqa: PLR2004
             else:
                 score = get_max_iou(char1.pix, char2.pix)
                 sub = get_sub(score)
@@ -116,11 +119,11 @@ def calc_scores(old_chars, new_chars, matrix, image_size, font):
 
 def get_sub(score):
     # These values are all MAGIC TODO
-    if score >= 0.7:
+    if score >= 0.7:  # noqa: PLR2004
         sub = 1.0
-    elif score >= 0.5:
+    elif score >= 0.5:  # noqa: PLR2004
         sub = 0.0
-    elif score >= 0.4:
+    elif score >= 0.4:  # noqa: PLR2004
         sub = -1.0
     else:
         sub = -2.0
@@ -134,8 +137,8 @@ def get_max_iou(pix1, pix2):
         for x in range(pix2.shape[1]):
             rolled = np.roll(pix2, (y, x), axis=(0, 1))
             overlap = pix1 + rolled
-            union = np.sum(overlap > 0.0)
-            inter = np.sum(overlap == 2.0)
+            union = np.sum(overlap > 0.0)  # noqa: PLR2004
+            inter = np.sum(overlap == 2.0)  # noqa: PLR2004
             curr_iou = inter / union if union else 0.0
             max_iou = max(max_iou, curr_iou)
     return max_iou

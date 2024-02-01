@@ -3,6 +3,8 @@ import unicodedata
 
 import regex as re
 
+MIN_LEN = 2
+
 # When there is no clear "winner" for a character in the multiple alignment of
 # a set of strings I sort the characters by unicode category as a tiebreaker
 CATEGORY = {
@@ -75,7 +77,7 @@ SUBSTITUTIONS = [
 
 def filter_lines(lines: list[str], line_align, threshold=128) -> list[str]:
     """Sort the lines by Levenshtein distance and filter out the outliers."""
-    if len(lines) <= 2:
+    if len(lines) <= MIN_LEN:
         return lines
 
     # levenshtein_all() returns a sorted array of tuples (score, index_1, index_2)
@@ -102,7 +104,8 @@ def _char_key(char):
 
 
 def consensus(aligned: list[str]) -> str:
-    """Build a consensus string from the aligned copies.
+    """
+    Build a consensus string from the aligned copies.
 
     Look at all characters of the multiple alignment and choose the most common one,
     using heuristics as a tiebreaker.
@@ -125,7 +128,8 @@ def substitute(line: str) -> str:
 
 
 def add_spaces(line, spell_well, vocab_len=3):
-    """Add spaces between words.
+    """
+    Add spaces between words.
 
     OCR engines will remove spaces between words. This function looks for a non-word
     and sees if adding a space will create 2 (or 1) word.
@@ -158,7 +162,8 @@ def add_spaces(line, spell_well, vocab_len=3):
 
 
 def remove_spaces(line, spell_well):
-    """Remove extra spaces in words.
+    """
+    Remove extra spaces in words.
 
     OCR engines will put spaces where there shouldn't be any. This is a simple
     scanner that looks for 2 non-words that make a new word when a space is removed.
@@ -166,7 +171,7 @@ def remove_spaces(line, spell_well):
     """
     tokens = spell_well.tokenize(line)
 
-    if len(tokens) <= 2:
+    if len(tokens) <= MIN_LEN:
         return line
 
     new = tokens[:2]

@@ -4,7 +4,7 @@ import easyocr
 import numpy as np
 import pytesseract
 
-from ..builder import label_builder
+from ensemble.pylib.builder import label_builder
 
 
 @dataclass
@@ -79,17 +79,17 @@ async def easyocr_engine(image) -> list[dict]:
     return results
 
 
-async def easy_text(image, pre_process=True) -> str:
+async def easy_text(image, pre_process=True) -> str:  # noqa: FBT002
     ocr_boxes = await easyocr_engine(image)
     return build_text(ocr_boxes, pre_process=pre_process)
 
 
-async def tess_text(image, pre_process=True) -> str:
+async def tess_text(image, pre_process=True) -> str:  # noqa: FBT002
     ocr_boxes = await tesseract_engine(image)
     return build_text(ocr_boxes, pre_process=pre_process)
 
 
-def build_text(ocr_boxes, pre_process=True):
+def build_text(ocr_boxes, pre_process=True):  # noqa: FBT002
     lines = get_lines(ocr_boxes)
 
     text = []
@@ -126,7 +126,8 @@ def get_lines(ocr_boxes, vert_overlap=0.3):
 
 
 def find_overlap(line: Line, ocr_box, eps=1e-6):
-    """Find the vertical overlap between a line and an OCR bounding box.
+    """
+    Find the vertical overlap between a line and an OCR bounding box.
 
     This is expressed as a fraction of the smallest height of the line
     & OCR bounding box.

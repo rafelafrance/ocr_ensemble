@@ -10,9 +10,10 @@ from PIL import Image
 from tqdm import tqdm
 from traiter.pylib.spell_well import SpellWell
 
-from .. import const, db
-from ..builder import label_builder, line_align_py
-from ..builder.line_align import char_sub_matrix as subs
+from ensemble.pylib import const, db
+from ensemble.pylib.builder import label_builder, line_align_py
+from ensemble.pylib.builder.line_align import char_sub_matrix as subs
+
 from . import label_transformer, ocr_runner
 
 IMAGE_TRANSFORMS = ["", "deskew_full", "binarize_full", "denoise_full"]

@@ -1,4 +1,5 @@
-"""Common functions for bounding boxes.
+"""
+Common functions for bounding boxes.
 
 This module mostly contains variants of bounding box non-maximum suppression (NMS).
 """
@@ -7,7 +8,8 @@ import torch
 
 
 def iou(box1, box2):
-    """Calculate the intersection over union of a pair of boxes.
+    """
+    Calculate the intersection over union of a pair of boxes.
 
     The boxes are expected to be in [x_min, y_min, x_max, y_max] (pascal) format.
 
@@ -28,7 +30,8 @@ def iou(box1, box2):
 
 
 def find_box_groups(boxes, threshold=0.3, scores=None):
-    """Find overlapping sets of bounding boxes.
+    """
+    Find overlapping sets of bounding boxes.
 
     Groups are by abs() where the positive value indicates the "best" box in the
     group and negative values indicate all other boxes in the group.
@@ -92,7 +95,8 @@ def nms(boxes, threshold=0.3, scores=None):
 
 
 def small_box_overlap(boxes, threshold=0.5):
-    """Get overlapping box groups using the intersection over area of the smaller box.
+    """
+    Get overlapping box groups using the intersection over area of the smaller box.
 
     This is analogous to the classic "non-maximum suppression" algorithm except:
         1. I return the groups of boxes rather than prune the overlapping ones.
@@ -145,7 +149,8 @@ def small_box_overlap(boxes, threshold=0.5):
 
 
 def small_box_suppression(boxes, threshold=0.9, eps=1e-8):
-    """Remove overlapping small bounding boxes, analogous to non-maximum suppression.
+    """
+    Remove overlapping small bounding boxes, analogous to non-maximum suppression.
 
     I can't just remove all small boxes because there are genuinely small labels.
     So I use the intersection of the boxes (over the area of the smaller box) to

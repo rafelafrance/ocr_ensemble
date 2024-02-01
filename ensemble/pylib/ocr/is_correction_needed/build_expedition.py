@@ -1,7 +1,6 @@
 import csv
 import json
 import logging
-import os
 import warnings
 from argparse import Namespace
 from pathlib import Path
@@ -13,14 +12,14 @@ from PIL import Image
 from tqdm import tqdm
 from traiter.pylib.spell_well import SpellWell
 
-from ... import db
+from ensemble.pylib import db
 
 
 def build_3_files(args: Namespace) -> None:
-    os.makedirs(args.expedition_dir, exist_ok=True)
+    args.expedition_dir.mkdir(parents=True, exist_ok=True)
 
     csv_path = args.expedition_dir / "manifest.csv"
-    with db.connect(args.database) as cxn, open(csv_path, "w") as csv_file:
+    with db.connect(args.database) as cxn, csv_path.open("w") as csv_file:
         run_id = db.insert_run(cxn, args)
 
         writer = csv.writer(csv_file)
@@ -38,11 +37,11 @@ def build_3_files(args: Namespace) -> None:
             image.save(str(image_path))
 
             text_path = image_path.with_suffix(".txt")
-            with open(text_path, "w") as out_file:
+            with text_path.open("w") as out_file:
                 out_file.write(rec["ocr_text"])
 
             json_path = image_path.with_suffix(".json")
-            with open(json_path, "w") as out_file:
+            with json_path.open("w") as out_file:
                 out_file.write(
                     json.dumps(
                         {
@@ -70,7 +69,7 @@ def build_3_files(args: Namespace) -> None:
 
 
 def build_2_files(args: Namespace) -> None:
-    os.makedirs(args.expedition_dir, exist_ok=True)
+    args.expedition_dir.mkdir(exist_ok=True)
 
     kept = 0
 
@@ -78,7 +77,7 @@ def build_2_files(args: Namespace) -> None:
     words = {w.lower() for w in spell_well.vocab_to_set()}
 
     csv_path = args.expedition_dir / "manifest.csv"
-    with db.connect(args.database) as cxn, open(csv_path, "w") as csv_file:
+    with db.connect(args.database) as cxn, csv_path.open("w") as csv_file:
         run_id = db.insert_run(cxn, args)
 
         writer = csv.writer(csv_file)
@@ -103,7 +102,7 @@ def build_2_files(args: Namespace) -> None:
             image.save(str(image_path))
 
             text_path = image_path.with_suffix(".txt")
-            with open(text_path, "w") as out_file:
+            with text_path.open("w") as out_file:
                 out_file.write(rec["ocr_text"])
 
             writer.writerow(
@@ -117,7 +116,8 @@ def build_2_files(args: Namespace) -> None:
             )
 
         db.update_run_finished(cxn, run_id)
-        logging.info(f"Kept {kept} of {len(recs)} records")
+        msg = f"Kept {kept} of {len(recs)} records"
+        logging.info(msg)
 
 
 def get_counts(label: dict, words):
@@ -146,10 +146,10 @@ def get_label(rec):
 
 
 def build_side_by_side(args: Namespace) -> None:
-    os.makedirs(args.expedition_dir, exist_ok=True)
+    args.expedition_dir.mkdir(parents=True, exist_ok=True)
     csv_path = args.expedition_dir / "manifest.csv"
 
-    with db.connect(args.database) as cxn, open(csv_path, "w") as csv_file:
+    with db.connect(args.database) as cxn, csv_path.open("w") as csv_file:
         run_id = db.insert_run(cxn, args)
 
         writer = csv.writer(csv_file)

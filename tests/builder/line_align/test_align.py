@@ -3,7 +3,7 @@ import unittest
 import cppimport.import_hook  # noqa: F401
 
 from ensemble.pylib.builder.line_align import char_sub_matrix as subs
-from ensemble.pylib.builder.line_align import line_align_py  # noqa
+from ensemble.pylib.builder.line_align import line_align_py
 
 
 class TestAlign(unittest.TestCase):

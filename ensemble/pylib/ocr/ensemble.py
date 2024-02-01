@@ -1,14 +1,17 @@
+from typing import ClassVar
+
 from traiter.pylib.spell_well import SpellWell
 
-from ..builder import label_builder
-from ..builder.line_align import char_sub_matrix as subs
-from ..builder.line_align import line_align_py  # noqa
+from ensemble.pylib.builder import label_builder
+from ensemble.pylib.builder.line_align import char_sub_matrix as subs
+from ensemble.pylib.builder.line_align import line_align_py
+
 from . import label_transformer as lt
 from . import ocr_runner
 
 
 class Ensemble:
-    all_pipes = {
+    all_pipes: ClassVar[str, str] = {
         "none_easyocr": "[,easyocr]",
         "none_tesseract": "[,tesseract]",
         "deskew_easyocr": "[deskew,easyocr]",
@@ -24,7 +27,8 @@ class Ensemble:
     def __init__(self, **kwargs):
         self.pipes = {k for k in self.all_pipes if kwargs.get(k, False)}
         if not self.pipes:
-            raise ValueError("No pipes given")
+            msg = "No pipes given"
+            raise ValueError(msg)
 
         matrix = subs.select_char_sub_matrix(char_set="default")
         self.line_align = line_align_py.LineAlign(matrix)
