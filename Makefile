@@ -11,14 +11,14 @@ test:
 
 install: venv
 	$(PIP_INSTALL) -U pip setuptools wheel
+	$(PIP_INSTALL) git+https://github.com/rafelafrance/common_utils.git@main#egg=common_utils
 	$(PIP_INSTALL) .
-	$(PIP_INSTALL) git+https://github.com/rafelafrance/traiter.git@master#egg=traiter
 
 dev: venv
 	source $(VENV)/bin/activate
 	$(PIP_INSTALL) -U pip setuptools wheel
+	$(PIP_INSTALL) -e ../../misc/common_utils
 	$(PIP_INSTALL) -e .[dev]
-	$(PIP_INSTALL) -e ../../traiter/traiter --config-settings editable_mode=strict
 	pre-commit install
 
 venv:

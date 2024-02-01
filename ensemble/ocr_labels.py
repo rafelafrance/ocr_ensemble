@@ -5,11 +5,16 @@ import textwrap
 from pathlib import Path
 
 from pylib.ocr import ocr_labels
-from traiter.pylib import log
+from util.pylib import log
 
 
-async def main():
+def main():
     log.started()
+    asyncio.run(main2())
+    log.finished()
+
+
+async def main2():
     args = parse_args()
     await ocr_labels.ocr_labels(args)
     log.finished()
@@ -126,4 +131,4 @@ def parse_args() -> argparse.Namespace:
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

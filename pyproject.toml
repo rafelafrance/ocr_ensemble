@@ -4,11 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ocr_ensemble"
-version = "0.1.1"
+version = "0.2.0"
 description = ""
 license = {file = "LICENSE"}
 authors = [{name="Raphael LaFrance", email="rafelafrance@proton.me"}]
 requires-python = ">=3.11"
+readme = "README.md"
 dependencies = [
     "Pillow",
     "cppimport",
@@ -24,113 +25,100 @@ dependencies = [
     "tqdm",
 ]
 optional-dependencies.dev = [
-    "autopep8",
-    "bandit",
-    "black",
-    "ipyparallel",
-    "ipython",
-    "isort",
-    "neovim",
+    "build",
     "pre-commit",
     "pre-commit-hooks",
-    "pydocstyle",
-    "pylint",
     "python-lsp-server[all]",
     "ruff",
-    "yapf",
 ]
+
+[project.scripts]
+char-sub-matrix = "ensemble.char_sub_matrix:main"
+ocr-labels = "ensemble.ocr_labels:main"
 
 [tool.setuptools]
 py-modules = []
 
-[tool.pycodestyle]
-ignore = "E402"
-
-[tool.black]
-line-length = 88
-target_version = ["py310"]
-include = '\.pyi?$'
-exclude = '''(
-      \.git
-    | \.mypy_cache
-    | \.venv
-    | build
-    | dist
-)'''
-
-[tool.pylint]
-max-line-length = 88
-ignore = ["CVS"]
-good-names = [
-    "i",
-    "j",
-    "k",
-    "x",
-    "y",
-    "_",
-    "x0",
-    "x1",
-    "x2",
-    "y0",
-    "y1",
-    "y2",
-    "lb",
-    "ln",
-    "df",
-    "lr",
-]
-design.max-args = 5                     # Maximum number of arguments for function / method.
-design.max-attributes = 7               # Maximum number of attributes for a class (see R0902).
-design.max-bool-expr = 5                # Maximum number of boolean expressions in an if statement (see R0916).
-design.max-branches = 12                # Maximum number of branch for function / method body.
-design.max-locals = 15                  # Maximum number of locals for function / method body.
-design.max-parents = 7                  # Maximum number of parents for a class (see R0901).
-design.max-public-methods = 20          # Maximum number of public methods for a class (see R0904).
-design.max-returns = 6                  # Maximum number of return / yield for function / method body.
-design.max-statements = 50              # Maximum number of statements in function / method body.
-design.min-public-methods = 2           # Minimum number of public methods for a class (see R0903).
-format.max-line-length = 79             # Maximum number of characters on a single line.
-format.max-module-lines = 1000          # Maximum number of lines in a module.
-logging.logging-format-style = "new"    # The type of string formatting that logging methods do. `old` means using % formatting, `new` is for `{}` formatting.
-logging.logging-modules = ["logging"]   # Logging modules to check that the string format arguments are in logging function parameter format.
-refactoring.max-nested-blocks = 5       # Maximum number of nested blocks for function / method body
-reports.output-format = "parseable"     # Set the output format. Available formats are text, parseable, colorized, json, and msvs (visual studio)
-reports.reports = true                  # Tells whether to display a full report or only the messages.
-reports.score = true                    # Activate the evaluation score.
-similarities.min-similarity-lines = 4   # Minimum lines number of a similarity.
-disable = [
-    "missing-module-docstring",         # "C0114"
-    "missing-class-docstring",          # "C0115"
-    "missing-function-docstring",       # "C0116"
-    "too-few-public-methods",           # "R0903"
-    "too-many-arguments",               # "R0913"
-]
-
 [tool.ruff]
-line-length = 88
-extend-select = [
-    "BLE",
-    "C4",
-    "D",
+target-version = "py311"
+
+show-fixes = true
+
+select = [
+    "F",
     "E",
-    "ERA",
+    "W",
+    "C90",
     "I",
-    "ISC",
     "N",
-    "NPY",
+    "D",
+    "UP",
+    "S",
+    "BLE",
+    "FBT",
+    "B",
+#    "A",  # flake8-builtins
+    "COM",
+    "C4",
+    "T10",
+    "EM",
+    "EXE",
+    "FA",
+    "ISC",
+    "ICN",
+    "G",
+    "INP",
+    "PIE",
+    "T20",
+    "PYI",
+    "PT",
+    "Q",
+    "RSE",
+    "RET",
+    "SLF",
+    "SLOT",
+    "SIM",
+    "TID",
+    "TCH",
+    "INT",
+#    "ARG",  # flake8-unused-arguments
+    "PTH",
+    "TD",
+    "FIX",
     "PD",
     "PGH",
-    "Q",
-    "RET",
-    "RSE",
+    "PL",
+    "TRY",
+    "FLY",
+    "NPY",
+    "PERF",
+#    "FURB",  # refurb
+#    "LOG",  # flake8-logging
     "RUF",
-    "S",
-    "SIM",
-    "T20",
-    "TCH",
-    "TID",
-    "UP",
-    "YTT",
 ]
-show-fixes = true
-ignore = ["D10", "D203", "D213", "ERA001", "PD901", "RET504", "RUF001", "TID252"]
+
+ignore = [
+    "COM812",  # Trailing comma missing
+    "D100",  # Missing docstring in public module
+    "D101",  # Missing docstring in public class
+    "D102",  # Missing docstring in public method
+    "D103",  # Missing docstring in public function
+    "D104",  # Missing docstring in public package
+    "D105",  # Missing docstring in public method
+    "D107",  # Missing docstring in public __init__
+    "D203",  # 1 blank line required before class docstring
+    "D212",  # Multi-line docstring summary should start at the first line
+#    "ISC001",  # Implicitly concatenated string literals on one line
+    "N818",  # Exception name {name} should be named with an Error suffix
+    "PD901",  # Avoid using the generic variable name df for DataFrames
+    "PLR0913",  # Too many arguments in function definition ({c_args} > {max_args})
+    "PLW2901",  # Outer {outer_kind} variable {name} overwritten by inner {inner_kind} target
+    "PLW0603",  # Using the global statement to update {name} is discouraged
+    "PT009",  # Use a regular assert instead of unittest-style {assertion}
+    "RET504",  # Unnecessary assignment to {name} before return statement
+    "RUF001",  # String contains ambiguous {}. Did you mean {}?
+    "SIM114",  # Combine if branches using logical or operator
+    "SIM117",  # Use a single with statement with multiple contexts instead of nested with statements
+    "SLF001",  # Private member accessed: {access}
+    "T201",  # print found
+]
