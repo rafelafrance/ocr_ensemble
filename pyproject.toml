@@ -39,6 +39,11 @@ ocr-labels = "ensemble.ocr_labels:main"
 [tool.setuptools]
 py-modules = []
 
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["ensemble"]
+namespaces = false
+
 [tool.ruff]
 target-version = "py311"
 

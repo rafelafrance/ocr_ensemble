@@ -3,8 +3,8 @@ import argparse
 import textwrap
 from pathlib import Path
 
-from pylib import const
-from pylib.builder.line_align import char_sub_matrix as matrix
+from ensemble.pylib import const
+from ensemble.pylib.builder.line_align import char_sub_matrix as matrix
 
 
 def main():

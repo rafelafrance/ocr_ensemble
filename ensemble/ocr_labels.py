@@ -4,8 +4,9 @@ import asyncio
 import textwrap
 from pathlib import Path
 
-from pylib.ocr import ocr_labels
 from util.pylib import log
+
+from ensemble.pylib.ocr import ocr_labels
 
 
 def main():

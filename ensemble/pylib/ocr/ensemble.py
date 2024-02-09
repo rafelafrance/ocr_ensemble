@@ -11,7 +11,7 @@ from . import ocr_runner
 
 
 class Ensemble:
-    all_pipes: ClassVar[str, str] = {
+    all_pipes: ClassVar[dict[str, str]] = {
         "none_easyocr": "[,easyocr]",
         "none_tesseract": "[,tesseract]",
         "deskew_easyocr": "[deskew,easyocr]",

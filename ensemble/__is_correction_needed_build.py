@@ -3,8 +3,9 @@ import argparse
 import textwrap
 from pathlib import Path
 
-from pylib.ocr.is_correction_needed import build_expedition
 from traiter.pylib import log
+
+from ensemble.pylib.ocr.is_correction_needed import build_expedition
 
 
 def main():
