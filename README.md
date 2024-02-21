@@ -105,7 +105,7 @@ source .venv/bin/activate
 ## OCR labels
 
 ```bash
-ocr-labels --label-dir data/label_images_dir --text-dir data/output_text_dir -RrDdbnPp
+ocr-labels --label-dir data/label_images_dir --text-dir /path/to/output_text_dir -RrDdbnPp
 ```
 
 ## Update character matrix
