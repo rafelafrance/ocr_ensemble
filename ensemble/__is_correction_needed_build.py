@@ -3,9 +3,9 @@ import argparse
 import textwrap
 from pathlib import Path
 
-from traiter.pylib import log
+from util.pylib import log
 
-from ensemble.pylib.ocr.is_correction_needed import build_expedition
+from ensemble.pylib.is_correction_needed import build_expedition
 
 
 def main():

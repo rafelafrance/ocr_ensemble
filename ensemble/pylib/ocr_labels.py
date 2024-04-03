@@ -5,7 +5,7 @@ import warnings
 from PIL import Image, UnidentifiedImageError
 from tqdm import tqdm
 
-from .ensemble import Ensemble
+from ensemble.pylib.ensemble import Ensemble
 
 IMAGE_EXCEPTIONS = (
     UnidentifiedImageError,

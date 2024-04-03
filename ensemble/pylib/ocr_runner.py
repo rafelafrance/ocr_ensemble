@@ -4,7 +4,7 @@ import easyocr
 import numpy as np
 import pytesseract
 
-from ensemble.pylib.builder import label_builder
+from ensemble.pylib import label_builder
 
 
 @dataclass

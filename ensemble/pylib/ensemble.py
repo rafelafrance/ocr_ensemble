@@ -1,13 +1,11 @@
 from typing import ClassVar
 
-from traiter.pylib.spell_well import SpellWell
+from line_align.pylib import char_sub_matrix
+from line_align.pylib.align import LineAlign
+from spell_well.pylib.spell_well import SpellWell
 
-from ensemble.pylib.builder import label_builder
-from ensemble.pylib.builder.line_align import char_sub_matrix as subs
-from ensemble.pylib.builder.line_align import line_align_py
-
-from . import label_transformer as lt
-from . import ocr_runner
+from ensemble.pylib import label_builder, ocr_runner
+from ensemble.pylib import label_transformer as lt
 
 
 class Ensemble:
@@ -30,8 +28,8 @@ class Ensemble:
             msg = "No pipes given"
             raise ValueError(msg)
 
-        matrix = subs.select_char_sub_matrix(char_set="default")
-        self.line_align = line_align_py.LineAlign(matrix)
+        matrix = char_sub_matrix.get(char_set="default")
+        self.line_align = LineAlign(matrix)
         self.spell_well = SpellWell()
 
     @property

@@ -6,7 +6,7 @@ from pathlib import Path
 
 from util.pylib import log
 
-from ensemble.pylib.ocr import ocr_labels
+from ensemble.pylib import ocr_labels
 
 
 def main():

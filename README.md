@@ -73,7 +73,7 @@ E MOJAVE DESERT PROVTDENCE MTS. # canyon above
 Be ‘MOJAVE DESERT, PROVIDENCE canyon “above
 ```
 
-The alignment may look like the following, depending on the MSA parameters. ⋄ is the gap character.
+The alignment may look like the following, depending on the MSA parameters. "⋄" is the gap character.
 
 ```
 ⋄⋄⋄⋄MOJAVE DESERT⋄, PROVIDENCE MTS⋄.⋄: canyon ⋄above
@@ -91,7 +91,7 @@ You can install the requirements into your python environment like so:
 
 ```bash
 git clone https://github.com/rafelafrance/ocr_ensemble.git
-cd /path/to/ocr_ensemble
+cd ocr_ensemble
 make install
 ```
 
