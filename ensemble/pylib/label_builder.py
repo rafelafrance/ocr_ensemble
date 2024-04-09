@@ -2,6 +2,7 @@ import collections
 import unicodedata
 
 import regex as re
+from line_align.pylib.levenshtein import levenshtein_all
 
 MIN_LEN = 2
 
@@ -75,15 +76,15 @@ SUBSTITUTIONS = [
 ]
 
 
-def filter_lines(lines: list[str], line_align, threshold=128) -> list[str]:
+def filter_lines(lines: list[str], threshold=128) -> list[str]:
     """Sort the lines by Levenshtein distance and filter out the outliers."""
     if len(lines) <= MIN_LEN:
         return lines
 
-    # levenshtein_all() returns a sorted array of tuples (score, index_1, index_2)
-    distances = line_align.levenshtein_all(lines)
+    # levenshtein_all() returns a sorted array of Distance named tuples/objects
+    distances = levenshtein_all(lines)
 
-    threshold += distances[0][0]  # Score cannot be more than best score + threshold
+    threshold += distances[0].dist  # Score cannot be more than best score + threshold
 
     order = {}  # Dicts preserve insertion order, sets do not
     for score, i, j in distances:

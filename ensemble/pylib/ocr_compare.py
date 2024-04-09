@@ -60,7 +60,7 @@
 #     pipelines = get_pipelines(golden[0])
 #
 #     matrix = subs.select_char_sub_matrix(char_set="default")
-#     line_align = LineAlign(matrix)
+#     aligner = LineAlign(matrix)
 #     spell_well = SpellWell()
 #
 #     for gold in golden:
@@ -68,21 +68,21 @@
 #             pipeline = copy(pipes)
 #
 #             lines = [gold["pipe_text"][p] for p in pipeline]
-#             lines = label_builder.filter_lines(lines, line_align)
+#             lines = label_builder.filter_lines(lines)
 #
-#             aligned = line_align.align(lines)
+#             aligned = aligner.align(lines)
 #
 #             # Pipeline without post-processing
 #             text = label_builder.consensus(aligned)
 #             scores.append(
-#                 score_rec(gold, text, pipeline, score_set, gold_set, line_align)
+#                 score_rec(gold, text, pipeline, score_set, gold_set, aligner)
 #             )
 #
 #             # Pipeline with post-processing
 #             text = label_builder.post_process_text(text, spell_well)
 #             pipeline.append("[post_process]")
 #             scores.append(
-#                 score_rec(gold, text, pipeline, score_set, gold_set, line_align)
+#                 score_rec(gold, text, pipeline, score_set, gold_set, aligner)
 #             )
 #
 #     return scores
@@ -101,7 +101,7 @@
 #     return scores
 #
 #
-# def score_rec(gold, text, pipeline, score_set, gold_set, line_align):
+# def score_rec(gold, text, pipeline, score_set, gold_set, aligner):
 #     text = text.replace("⋄", "")  # Remove gaps
 #     return {
 #         "score_set": score_set,
@@ -110,7 +110,7 @@
 #         "gold_set": gold_set,
 #         "pipeline": json.dumps(pipeline),
 #         "score_text": text,
-#         "score": line_align.levenshtein(gold["gold_text"], text),
+#         "score": aligner.levenshtein(gold["gold_text"], text),
 #     }
 #
 #

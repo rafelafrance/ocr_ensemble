@@ -18,7 +18,6 @@ def main():
 async def main2():
     args = parse_args()
     await ocr_labels.ocr_labels(args)
-    log.finished()
 
 
 def parse_args() -> argparse.Namespace:

@@ -29,7 +29,7 @@ class Ensemble:
             raise ValueError(msg)
 
         matrix = char_sub_matrix.get(char_set="default")
-        self.line_align = LineAlign(matrix)
+        self.aligner = LineAlign(matrix)
         self.spell_well = SpellWell()
 
     @property
@@ -53,8 +53,8 @@ class Ensemble:
 
     async def run(self, image):
         lines = list(await self.ocr(image))
-        lines = label_builder.filter_lines(lines, self.line_align)
-        text = self.line_align.align(lines)
+        lines = label_builder.filter_lines(lines)
+        text = self.aligner.align(lines)
         text = label_builder.consensus(text)
         if "post_process" in self.pipes:
             text = label_builder.post_process_text(text, self.spell_well)
