@@ -86,16 +86,16 @@ def parse_args() -> argparse.Namespace:
     )
 
     arg_parser.add_argument(
-        "--binarize-tesseract",
         "-b",
+        "--binarize-tesseract",
         action="store_true",
         help="""Add a step to the OCR pipeline that binarizes the label image before
             running Tesseract.""",
     )
 
     arg_parser.add_argument(
-        "--denoise-easyocr",
         "-N",
+        "--denoise-easyocr",
         action="store_true",
         help="""Add a step to the OCR pipeline that denoises the label image before
             running EasyOCR.""",
