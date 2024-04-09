@@ -95,6 +95,8 @@ cd ocr_ensemble
 make install
 ```
 
+You will also need to install the external dependency `Tesseeract OCR`. How you do this depends upon your OS. If you are given a choice install the developer version.
+
 Every time you want to run any scripts in a new terminal session you will need to activate the virtual environment, once, before running them.
 
 ```bash
