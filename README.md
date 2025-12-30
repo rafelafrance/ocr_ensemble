@@ -1,3 +1,9 @@
+**Note that this technique is completely outclassed by modern small language models like olmOCR, ChandraOCR, etc.**
+
+I recommend using them instead, I do.
+See [LabelLlama](https://github.com/rafelafrance/LabelLlama/blob/main/llama/ocr_images.py) for an example.
+It's just a good start, not the best.
+
 # ocr_ensemble![CI](https://github.com/rafelafrance/ocr_ensemble/workflows/CI/badge.svg)
 
 1. [Description](#Description)
